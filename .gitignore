@@ -1,0 +1,7 @@
+bin
+dist
+node_modules
+obfuscated
+package-lock.json
+yarn-error.log
+yarn.lock
