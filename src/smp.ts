@@ -17,7 +17,11 @@
 */
 
 // Import Required Modules
-import fastify, { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
+import fastify, { 
+	FastifyInstance, 
+	FastifyReply, 
+	FastifyRequest, 
+	RequestPayload } from "fastify";
 import cookie from "fastify-cookie";
 import formbody from "fastify-formbody";
 
@@ -65,6 +69,21 @@ const smp: FastifyInstance = fastify();
 // Enable data parsers
 void smp.register(cookie);
 void smp.register(formbody);
+
+// Add content type parser for 'application/octet-stream'
+// TODO: Add correct type for 'done' to avoid @typescript-eslint/ban-types
+smp.addContentTypeParser("application/octet-stream", 
+	// eslint-disable-next-line @typescript-eslint/ban-types
+	(req: FastifyRequest, payload: RequestPayload, done: Function) => {
+		let data = "";
+		payload.on("data", (chunk: unknown) => { 
+			data += chunk; 
+		});
+		payload.on("end", () => {
+			done(null, data);
+		});
+	}
+);
 
 // Setup dynamic variable storage
 const variable_store: VariableStore = {};
